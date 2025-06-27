@@ -130,10 +130,10 @@ export default function CartPage() {
                   className="group"
                 >
                   <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1">
-                    <CardContent className="p-8">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                    <CardContent className="p-4 sm:p-8">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                         {/* Product Image */}
-                        <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0">
+                        <div className="relative w-24 h-24 flex-shrink-0 mx-auto sm:mx-0 rounded-xl overflow-hidden">
                           <Image
                             src={item.image}
                             alt={language === 'ar' ? item.nameAr : item.name}
@@ -143,63 +143,58 @@ export default function CartPage() {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-xl"></div>
                         </div>
 
-                        {/* Product Info */}
-                        <div className="flex-1 min-w-0 space-y-3">
-                          <div>
-                            <h3 className="font-bold text-xl text-gray-900 truncate">
-                              {language === 'ar' ? item.nameAr : item.name}
-                            </h3>
-                            <div className="flex items-center gap-3 mt-2">
-                              <Badge variant="secondary" className="bg-fawaz-orange-100 text-fawaz-orange-700">
-                                {item.category}
-                              </Badge>
-                              <span className="text-2xl font-bold text-fawaz-green-600">
-                                {formatPrice(item.price)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Quantity Controls */}
-                        <div className="flex flex-col sm:flex-row items-center gap-4">
-                          <div className="flex items-center bg-gray-50 rounded-lg p-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="h-10 w-10 hover:bg-white hover:shadow-sm"
-                              disabled={item.quantity <= 1}
-                            >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <span className="w-16 text-center font-bold text-lg">
-                              {item.quantity}
+                        {/* Product Info & Controls */}
+                        <div className="flex-1 w-full flex flex-col gap-2">
+                          <h3 className="font-bold text-lg sm:text-xl text-gray-900 truncate text-center sm:text-right">
+                            {language === 'ar' ? item.nameAr : item.name}
+                          </h3>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 justify-between">
+                            <Badge variant="secondary" className="bg-fawaz-orange-100 text-fawaz-orange-700 w-fit mx-auto sm:mx-0">
+                              {item.category}
+                            </Badge>
+                            <span className="text-xl font-bold text-fawaz-green-600 text-center sm:text-right">
+                              {formatPrice(item.price)}
                             </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="h-10 w-10 hover:bg-white hover:shadow-sm"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
                           </div>
-
-                          {/* Item Total */}
-                          <div className="text-center sm:text-right">
-                            <p className="font-bold text-2xl text-gray-900 mb-2">
-                              {formatPrice(item.price * item.quantity)}
-                            </p>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
+                            {/* Quantity Controls */}
+                            <div className="flex items-center justify-center bg-gray-50 rounded-lg p-1 w-full sm:w-auto">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                className="h-10 w-10 hover:bg-white hover:shadow-sm"
+                                disabled={item.quantity <= 1}
+                              >
+                                <Minus className="h-4 w-4" />
+                              </Button>
+                              <span className="w-12 text-center font-bold text-lg">
+                                {item.quantity}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                className="h-10 w-10 hover:bg-white hover:shadow-sm"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            {/* Remove Button */}
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => removeFromCart(item.id)}
-                              className="text-red-500 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-colors"
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-colors w-full sm:w-auto mt-2 sm:mt-0"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               {t('cart.remove')}
                             </Button>
                           </div>
+                          {/* Item Total */}
+                          <p className="font-bold text-xl text-fawaz-green-700 text-center sm:text-right mt-2">
+                            {formatPrice(item.price * item.quantity)}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -217,7 +212,7 @@ export default function CartPage() {
                 <Button
                   variant="outline"
                   onClick={clearCart}
-                  className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 px-8 py-3 rounded-lg transition-all duration-300"
+                  className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 px-8 py-3 rounded-lg transition-all duration-300 mt-2"
                 >
                   <Trash2 className="h-5 w-5 mr-3" />
                   {language === 'ar' ? 'تفريغ السلة' : 'Clear Cart'}
@@ -233,8 +228,8 @@ export default function CartPage() {
                 transition={{ duration: 0.6 }}
                 className="sticky top-24"
               >
-                <Card className="border-0 shadow-xl">
-                  <CardHeader className="bg-gradient-to-r from-fawaz-orange-50 to-fawaz-green-50 pb-6">
+                <Card className="border-0 shadow-xl rounded-2xl bg-white">
+                  <CardHeader className="bg-gradient-to-r from-fawaz-orange-50 to-fawaz-green-50 pb-6 rounded-t-2xl">
                     <CardTitle className="gradient-text text-2xl flex items-center gap-3">
                       <ShoppingCart className="w-6 h-6" />
                       {language === 'ar' ? 'ملخص الطلب' : 'Order Summary'}
@@ -249,7 +244,7 @@ export default function CartPage() {
                             <p className="font-medium truncate">
                               {language === 'ar' ? item.nameAr : item.name}
                             </p>
-                            <p className="text-gray-500">Qty: {item.quantity}</p>
+                            <p className="text-gray-500">{`× ${item.quantity}`}</p>
                           </div>
                           <span className="font-bold text-fawaz-green-600 ml-3">
                             {formatPrice(item.price * item.quantity)}
@@ -268,7 +263,7 @@ export default function CartPage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">{language === 'ar' ? 'الشحن' : 'Shipping'}</span>
-                        <Badge variant="secondary" className="bg-green-100 text-green-700 font-medium">
+                        <Badge variant="secondary" className="bg-fawaz-green-100 text-fawaz-green-700 font-medium px-3 py-1 rounded-full">
                           <Truck className="w-3 h-3 mr-1" />
                           {language === 'ar' ? 'مجاني' : 'Free'}
                         </Badge>
@@ -292,7 +287,7 @@ export default function CartPage() {
                     </div>
 
                     {/* Checkout Button */}
-                    <Button className="w-full btn-primary text-lg py-6 rounded-xl shadow-lg hover:shadow-xl">
+                    <Button className="w-full btn-primary text-lg py-6 rounded-xl shadow-lg hover:shadow-xl mt-4">
                       <CreditCard className="w-6 h-6 mr-3" />
                       {t('cart.checkout')}
                     </Button>
