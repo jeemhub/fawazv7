@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Grid, List } from 'lucide-react';
-import productsData from '@/data/products.json';
+import productsData from '@/data/products.json'; // فقط للفئات
 import { supabase } from '@/lib/supabaseClient';
 
 export default function ProductsPage() {
@@ -20,7 +20,7 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [products, setProducts] = useState(productsData.products); // fallback to local data
+  const [products, setProducts] = useState([]); // fallback to local data
   const { categories } = productsData;
 
   useEffect(() => {

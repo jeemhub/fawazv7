@@ -22,12 +22,12 @@ import {
   Truck
 } from 'lucide-react';
 import Link from 'next/link';
-import productsData from '@/data/products.json';
+import productsData from '@/data/products.json'; // فقط للفئات
 import { supabase } from '@/lib/supabaseClient';
 
 export default function HomePage() {
   const { t, language, isRTL } = useLanguage();
-  const [products, setProducts] = useState(productsData.products); // fallback to local data
+  const [products, setProducts] = useState([]); // fallback to local data
 
   useEffect(() => {
     const fetchProducts = async () => {
