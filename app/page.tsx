@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -23,11 +23,29 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import productsData from '@/data/products.json';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function HomePage() {
   const { t, language, isRTL } = useLanguage();
+  const [products, setProducts] = useState(productsData.products); // fallback to local data
 
-  const featuredProducts = productsData.products.filter(product => product.featured);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching products:', error);
+        alert('حدث خطأ أثناء جلب المنتجات');
+        return;
+      }
+      if (data) setProducts(data);
+    };
+    fetchProducts();
+  }, []);
+
+  const featuredProducts = products.filter(product => product.featured);
   const categories = productsData.categories;
 
   const features = [
@@ -298,11 +316,17 @@ export default function HomePage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {featuredProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {products.map((product, index) => (
+                <ProductCard key={index} product={product} index={index} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 text-gray-500">
+              {language === 'ar' ? 'لا توجد منتجات مميزة متاحة حالياً.' : 'No featured products available at the moment.'}
+            </div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

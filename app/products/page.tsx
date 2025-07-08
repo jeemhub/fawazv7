@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Grid, List } from 'lucide-react';
 import productsData from '@/data/products.json';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function ProductsPage() {
   const { t, language } = useLanguage();
@@ -19,8 +20,24 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [products, setProducts] = useState(productsData.products); // fallback to local data
+  const { categories } = productsData;
 
-  const { products, categories } = productsData;
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching products:', error);
+        alert('حدث خطأ أثناء جلب المنتجات');
+        return;
+      }
+      if (data) setProducts(data);
+    };
+    fetchProducts();
+  }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products.filter(product => {

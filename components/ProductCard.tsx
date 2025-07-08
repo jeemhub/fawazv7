@@ -60,7 +60,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           {/* Product Image */}
           <div className="relative h-48 w-full">
             <Image
-              src={product.image}
+              src={product.image && product.image.trim() !== '' ? product.image : '/default.png'}
               alt={language === 'ar' ? product.nameAr : product.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-110"
