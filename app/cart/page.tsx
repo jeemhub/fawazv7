@@ -135,7 +135,7 @@ export default function CartPage() {
                         {/* Product Image */}
                         <div className="relative w-24 h-24 flex-shrink-0 mx-auto sm:mx-0 rounded-xl overflow-hidden">
                           <Image
-                            src={item.image}
+                            src={item.image && item.image.trim() !== '' ? item.image : '/default.png'}
                             alt={language === 'ar' ? item.nameAr : item.name}
                             fill
                             className="object-cover rounded-xl shadow-md"
