@@ -25,9 +25,22 @@ import Link from 'next/link';
 import productsData from '@/data/products.json'; // فقط للفئات
 import { supabase } from '@/lib/supabaseClient';
 
+interface Product {
+  id: string;
+  name: string;
+  nameAr: string;
+  description: string;
+  descriptionAr: string;
+  price: number;
+  category: string;
+  image: string;
+  inStock: boolean;
+  featured?: boolean;
+}
+
 export default function HomePage() {
   const { t, language, isRTL } = useLanguage();
-  const [products, setProducts] = useState([]); // fallback to local data
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
