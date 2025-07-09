@@ -78,10 +78,10 @@ export default function ProductsPage() {
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products.filter(product => {
       const matchesSearch = searchTerm === '' || 
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.nameAr.includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.descriptionAr.includes(searchTerm);
+        (product.name && product.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (product.nameAr && product.nameAr.includes(searchTerm)) ||
+        (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (product.descriptionAr && product.descriptionAr.includes(searchTerm));
       
       const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
       
