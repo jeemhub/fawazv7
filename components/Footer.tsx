@@ -14,7 +14,8 @@ import {
   Globe,
   Shield,
   Zap,
-  Wifi
+  Wifi,
+  Globe as TikTokIcon
 } from 'lucide-react';
 
 export default function Footer() {
@@ -45,7 +46,7 @@ export default function Footer() {
     {
       name: 'TikTok',
       href: 'https://tiktok.com/@fawazoffice',
-      icon: Globe,
+      icon: TikTokIcon,
       color: 'hover:text-black'
     },
   ];
@@ -56,7 +57,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center space-x-3">
+            <Link href="/" className={`flex items-center ${language === 'ar' ? 'gap-4' : 'space-x-3'}`}>
               <div className="relative w-12 h-12">
                 <Image
                   src="/logo.jpg"
