@@ -38,9 +38,19 @@ interface Product {
   featured?: boolean;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  nameAr: string;
+  description: string;
+  descriptionAr: string;
+  image: string;
+}
+
 export default function HomePage() {
   const { t, language, isRTL } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -56,10 +66,23 @@ export default function HomePage() {
       if (data) setProducts(data);
     };
     fetchProducts();
+    // جلب الفئات من supabase
+    const fetchCategories = async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('id', { ascending: true });
+      if (error) {
+        console.error('Error fetching categories:', error);
+        alert('حدث خطأ أثناء جلب الفئات');
+        return;
+      }
+      if (data) setCategories(data);
+    };
+    fetchCategories();
   }, []);
 
   const featuredProducts = products.filter(product => product.featured);
-  const categories = productsData.categories;
 
   const features = [
     {
@@ -287,7 +310,7 @@ export default function HomePage() {
                   <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
                     <div className="relative h-48 overflow-hidden">
                       <img
-                        src={category.image}
+                        src={category.image && category.image.trim() !== '' ? category.image : '/default.png'}
                         alt={language === 'ar' ? category.nameAr : category.name}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                       />

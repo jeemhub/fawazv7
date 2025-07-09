@@ -27,6 +27,15 @@ interface Product {
   featured?: boolean;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  nameAr: string;
+  description: string;
+  descriptionAr: string;
+  image: string;
+}
+
 export default function ProductsPage() {
   const { t, language } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +43,7 @@ export default function ProductsPage() {
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [products, setProducts] = useState<Product[]>([]);
-  const { categories } = productsData;
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -50,6 +59,20 @@ export default function ProductsPage() {
       if (data) setProducts(data);
     };
     fetchProducts();
+    // جلب الفئات من supabase
+    const fetchCategories = async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('id', { ascending: true });
+      if (error) {
+        console.error('Error fetching categories:', error);
+        alert('حدث خطأ أثناء جلب الفئات');
+        return;
+      }
+      if (data) setCategories(data);
+    };
+    fetchCategories();
   }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
