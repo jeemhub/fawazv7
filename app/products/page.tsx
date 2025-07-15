@@ -41,7 +41,6 @@ export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -57,7 +56,6 @@ export default function ProductsPage() {
         return;
       }
       if (data) {
-        // تعديل هنا: نضيف خاصية image من image_url أو default.png
         const mapped = data.map((product: any) => ({
           ...product,
           image: product.image_url && product.image_url.trim() !== '' ? product.image_url : '/default.png',
@@ -77,10 +75,23 @@ export default function ProductsPage() {
         alert('حدث خطأ أثناء جلب الفئات');
         return;
       }
-      if (data) setCategories(data);
+      if (data) {
+        const mapped = data.map((category: any) => ({
+          ...category,
+          image: category.image_url && category.image_url.trim() !== '' ? category.image_url : '/default.png',
+        }));
+        setCategories(mapped);
+      }
     };
     fetchCategories();
   }, []);
+
+  // الفئات التي لديها منتجات فقط
+  const categoriesWithProducts = useMemo(() => {
+    return categories.filter(category =>
+      products.some(product => product.category === category.id)
+    );
+  }, [categories, products]);
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products.filter(product => {
@@ -89,13 +100,9 @@ export default function ProductsPage() {
         (product.nameAr && product.nameAr.includes(searchTerm)) ||
         (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (product.descriptionAr && product.descriptionAr.includes(searchTerm));
-      
       const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-      
       return matchesSearch && matchesCategory;
     });
-
-    // Sort products
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'name':
@@ -112,14 +119,12 @@ export default function ProductsPage() {
           return 0;
       }
     });
-
     return filtered;
   }, [products, searchTerm, selectedCategory, sortBy, language]);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
       {/* Page Header */}
       <section className="bg-white border-b">
         <div className="container mx-auto px-4 py-8">
@@ -134,13 +139,11 @@ export default function ProductsPage() {
             <p className="text-lg text-gray-600">
               {language === 'ar' 
                 ? 'اكتشف مجموعتنا الكاملة من المنتجات التقنية المتطورة'
-                : 'Discover our complete range of advanced technology products'
-              }
+                : 'Discover our complete range of advanced technology products'}
             </p>
           </motion.div>
         </div>
       </section>
-
       {/* Filters and Search */}
       <section className="bg-white border-b sticky top-16 z-40">
         <div className="container mx-auto px-4 py-4">
@@ -156,27 +159,31 @@ export default function ProductsPage() {
                 className="pl-10 border-gray-300 focus:border-fawaz-orange-500 focus:ring-fawaz-orange-500"
               />
             </div>
-
             {/* Filters */}
             <div className="flex items-center gap-4">
               {/* Category Filter */}
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-48">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder={language === 'ar' ? 'الفئة' : 'Category'} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
+              <div className="flex gap-2 flex-wrap">
+                {categoriesWithProducts.map(category => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? 'default' : 'outline'}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className="px-4 py-2"
+                  >
+                    {language === 'ar' ? category.nameAr : category.name}
+                  </Button>
+                ))}
+                {/* زر إظهار الكل فقط إذا كان هناك أكثر من فئة */}
+                {categoriesWithProducts.length > 1 && (
+                  <Button
+                    variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                    onClick={() => setSelectedCategory('all')}
+                    className="px-4 py-2"
+                  >
                     {language === 'ar' ? 'جميع الفئات' : 'All Categories'}
-                  </SelectItem>
-                  {categories.map(category => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {language === 'ar' ? category.nameAr : category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
+                  </Button>
+                )}
+              </div>
               {/* Sort */}
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-48">
@@ -197,29 +204,8 @@ export default function ProductsPage() {
                   </SelectItem>
                 </SelectContent>
               </Select>
-
-              {/* View Mode */}
-              <div className="flex border rounded-lg">
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                  className="rounded-r-none"
-                >
-                  <Grid className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                  className="rounded-l-none"
-                >
-                  <List className="w-4 h-4" />
-                </Button>
-              </div>
             </div>
           </div>
-
           {/* Active Filters */}
           <div className="flex items-center gap-2 mt-4">
             {selectedCategory !== 'all' && (
@@ -247,7 +233,6 @@ export default function ProductsPage() {
           </div>
         </div>
       </section>
-
       {/* Products Grid */}
       <section className="py-8">
         <div className="container mx-auto px-4">
@@ -256,18 +241,12 @@ export default function ProductsPage() {
             <p className="text-gray-600">
               {language === 'ar' 
                 ? `عرض ${filteredAndSortedProducts.length} من ${products.length} منتج`
-                : `Showing ${filteredAndSortedProducts.length} of ${products.length} products`
-              }
+                : `Showing ${filteredAndSortedProducts.length} of ${products.length} products`}
             </p>
           </div>
-
           {/* Products */}
           {filteredAndSortedProducts.length > 0 ? (
-            <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-                : 'grid-cols-1'
-            }`}>
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredAndSortedProducts.map((product, index) => (
                 <ProductCard 
                   key={product.id} 
@@ -291,8 +270,7 @@ export default function ProductsPage() {
               <p className="text-gray-600 mb-6">
                 {language === 'ar' 
                   ? 'جرب تغيير معايير البحث أو المرشحات'
-                  : 'Try adjusting your search criteria or filters'
-                }
+                  : 'Try adjusting your search criteria or filters'}
               </p>
               <Button
                 onClick={() => {
@@ -307,7 +285,6 @@ export default function ProductsPage() {
           )}
         </div>
       </section>
-
       <Footer />
     </div>
   );

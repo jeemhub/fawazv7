@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Category {
   id: string;
@@ -17,6 +18,8 @@ interface Category {
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -28,10 +31,32 @@ export default function CategoriesPage() {
         alert('حدث خطأ أثناء جلب الفئات');
         return;
       }
-      if (data) setCategories(data);
+      if (data) {
+        const mapped = data.map((category: any) => ({
+          ...category,
+          image: category.image_url && category.image_url.trim() !== '' ? category.image_url : '/default.png',
+        }));
+        setCategories(mapped);
+      }
+    };
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, category');
+      if (!error && data) setProducts(data);
     };
     fetchCategories();
+    fetchProducts();
   }, []);
+
+  // الفئات التي لديها منتجات فقط
+  const categoriesWithProducts = categories.filter(category =>
+    products.some(product => product.category === category.id)
+  );
+
+  const handleCategoryClick = (categoryId: string) => {
+    router.push(`/products?category=${categoryId}`);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -39,8 +64,12 @@ export default function CategoriesPage() {
       <main className="flex-1 container mx-auto px-4 py-16">
         <h1 className="text-4xl font-extrabold mb-10 text-fawaz-orange-500 text-center">جميع الفئات</h1>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {categories.map((category) => (
-            <Link key={category.id} href={`/categories/${category.id}`} className="group block rounded-xl overflow-hidden shadow-lg border hover:shadow-2xl transition-all bg-white">
+          {categoriesWithProducts.map((category) => (
+            <div
+              key={category.id}
+              className="group block rounded-xl overflow-hidden shadow-lg border hover:shadow-2xl transition-all bg-white cursor-pointer"
+              onClick={() => handleCategoryClick(category.id)}
+            >
               <div className="relative h-48 w-full overflow-hidden">
                 <img
                   src={category.image && category.image.trim() !== '' ? category.image : '/default.png'}
@@ -56,7 +85,7 @@ export default function CategoriesPage() {
                   {category.descriptionAr || category.description}
                 </p>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </main>

@@ -77,7 +77,13 @@ export default function HomePage() {
         alert('حدث خطأ أثناء جلب الفئات');
         return;
       }
-      if (data) setCategories(data);
+      if (data) {
+        const mapped = data.map((category: any) => ({
+          ...category,
+          image: category.image_url && category.image_url.trim() !== '' ? category.image_url : '/default.png',
+        }));
+        setCategories(mapped);
+      }
     };
     fetchCategories();
   }, []);
@@ -309,11 +315,13 @@ export default function HomePage() {
                 <Link href={`/categories/${category.id}`}>
                   <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
                     <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={category.image && category.image.trim() !== '' ? category.image : '/default.png'}
-                        alt={language === 'ar' ? category.nameAr : category.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
+                      {category.image && category.image !== '/default.png' && (
+                        <img
+                          src={category.image}
+                          alt={language === 'ar' ? category.nameAr : category.name}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        />
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <div className="absolute bottom-4 left-4 right-4 text-white">
                         <h3 className="text-xl font-bold mb-2">
