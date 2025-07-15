@@ -375,10 +375,7 @@ export default function HomePage() {
               {featuredProducts.map((product, index) => (
                 <ProductCard
                   key={product.id}
-                  product={{
-                    ...product,
-                    image: product.image_url && product.image_url.trim() !== '' ? product.image_url : '/default.png',
-                  }}
+                  product={product}
                   index={index}
                 />
               ))}
