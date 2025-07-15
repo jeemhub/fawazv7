@@ -24,6 +24,7 @@ import {
 import Link from 'next/link';
 import productsData from '@/data/products.json'; // فقط للفئات
 import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 interface Product {
   id: string;
@@ -51,6 +52,7 @@ export default function HomePage() {
   const { t, language, isRTL } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -87,6 +89,15 @@ export default function HomePage() {
     };
     fetchCategories();
   }, []);
+
+  // الفئات التي لديها منتجات فقط
+  const categoriesWithProducts = categories.filter(category =>
+    products.some(product => product.category === category.id)
+  );
+
+  const handleCategoryClick = (categoryId: string) => {
+    router.push(`/products?category=${categoryId}`);
+  };
 
   const featuredProducts = products.filter(product => product.featured);
 
@@ -305,35 +316,34 @@ export default function HomePage() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {categories.map((category, index) => (
+            {categoriesWithProducts.map((category, index) => (
               <motion.div
                 key={category.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Link href={`/categories/${category.id}`}>
-                  <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
-                    <div className="relative h-48 overflow-hidden">
-                      {category.image && category.image !== '/default.png' && (
-                        <img
-                          src={category.image}
-                          alt={language === 'ar' ? category.nameAr : category.name}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                      <div className="absolute bottom-4 left-4 right-4 text-white">
-                        <h3 className="text-xl font-bold mb-2">
-                          {language === 'ar' ? category.nameAr : category.name}
-                        </h3>
-                        <p className="text-sm opacity-90">
-                          {language === 'ar' ? category.descriptionAr : category.description}
-                        </p>
-                      </div>
+                <Card
+                  className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                  onClick={() => handleCategoryClick(category.id)}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={category.image && category.image.trim() !== '' ? category.image : '/default.png'}
+                      alt={language === 'ar' ? category.nameAr : category.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <h3 className="text-xl font-bold mb-2">
+                        {language === 'ar' ? category.nameAr : category.name}
+                      </h3>
+                      <p className="text-sm opacity-90">
+                        {language === 'ar' ? category.descriptionAr : category.description}
+                      </p>
                     </div>
-                  </Card>
-                </Link>
+                  </div>
+                </Card>
               </motion.div>
             ))}
           </div>
@@ -362,8 +372,15 @@ export default function HomePage() {
 
           {featuredProducts.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {products.map((product, index) => (
-                <ProductCard key={index} product={product} index={index} />
+              {featuredProducts.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={{
+                    ...product,
+                    image: product.image_url && product.image_url.trim() !== '' ? product.image_url : '/default.png',
+                  }}
+                  index={index}
+                />
               ))}
             </div>
           ) : (

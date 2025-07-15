@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Grid, List } from 'lucide-react';
 import productsData from '@/data/products.json'; // فقط للفئات
 import { supabase } from '@/lib/supabaseClient';
+import { useSearchParams } from 'next/navigation';
 
 interface Product {
   id: string;
@@ -38,11 +39,20 @@ interface Category {
 
 export default function ProductsPage() {
   const { t, language } = useLanguage();
+  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+
+  // عند تحميل الصفحة: إذا كان هناك category في الكويري، فعّل الفلترة تلقائياً
+  useEffect(() => {
+    const categoryFromQuery = searchParams.get('category');
+    if (categoryFromQuery) {
+      setSelectedCategory(categoryFromQuery);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchProducts = async () => {
