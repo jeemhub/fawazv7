@@ -105,7 +105,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             </p>
             <div className="flex items-center justify-between">
               <span className="text-2xl font-bold text-fawaz-green-600">
-                ${product.price}
+                {product.price} د.ع
               </span>
               <Badge variant="outline" className="text-xs">
                 {language === 'ar' ? 'متوفر' : 'In Stock'}

@@ -56,7 +56,14 @@ export default function ProductsPage() {
         alert('حدث خطأ أثناء جلب المنتجات');
         return;
       }
-      if (data) setProducts(data);
+      if (data) {
+        // تعديل هنا: نضيف خاصية image من image_url أو default.png
+        const mapped = data.map((product: any) => ({
+          ...product,
+          image: product.image_url && product.image_url.trim() !== '' ? product.image_url : '/default.png',
+        }));
+        setProducts(mapped);
+      }
     };
     fetchProducts();
     // جلب الفئات من supabase

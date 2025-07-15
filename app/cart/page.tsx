@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Header from '@/components/Header';
@@ -24,16 +24,41 @@ import {
   Truck
 } from 'lucide-react';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 
 export default function CartPage() {
   const { t, language, isRTL } = useLanguage();
   const { items, updateQuantity, removeFromCart, getTotalPrice, getTotalItems, clearCart } = useCart();
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
+
+  const handleCheckout = () => {
+    setShowCheckoutForm(true);
+  };
+
+  const handleSendWhatsApp = (e: React.FormEvent) => {
+    e.preventDefault();
+    let invoiceText = `فاتورة طلب جديد:\n`;
+    invoiceText += `الاسم: ${customerName}\n`;
+    invoiceText += `رقم الهاتف: ${customerPhone}\n`;
+    invoiceText += `العنوان: ${customerAddress}\n`;
+    invoiceText += `----------------------\n`;
+    items.forEach((item, idx) => {
+      invoiceText += `${idx + 1}- ${item.nameAr || item.name} × ${item.quantity} = ${(item.price * item.quantity).toLocaleString()} د.ع\n`;
+    });
+    invoiceText += `----------------------\n`;
+    invoiceText += `المجموع: ${getTotalPrice().toLocaleString()} د.ع\n`;
+    invoiceText += `الشحن: 5,000 د.ع\n`;
+    invoiceText += `الضريبة: 0 د.ع\n`;
+    invoiceText += `الإجمالي: ${(getTotalPrice() + 5000).toLocaleString()} د.ع\n`;
+    const waText = encodeURIComponent(invoiceText);
+    window.open(`https://wa.me/9647870706555?text=${waText}`, '_blank');
+  };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(price);
+    return `${price.toLocaleString()} د.ع`;
   };
 
   if (items.length === 0) {
@@ -263,16 +288,11 @@ export default function CartPage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">{language === 'ar' ? 'الشحن' : 'Shipping'}</span>
-                        <Badge variant="secondary" className="bg-fawaz-green-100 text-fawaz-green-700 font-medium px-3 py-1 rounded-full">
-                          <Truck className="w-3 h-3 mr-1" />
-                          {language === 'ar' ? 'مجاني' : 'Free'}
-                        </Badge>
+                        <span className="font-semibold text-lg">{formatPrice(5000)}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">{language === 'ar' ? 'الضريبة' : 'Tax'}</span>
-                        <span className="font-semibold">
-                          {formatPrice(getTotalPrice() * 0.15)}
-                        </span>
+                        <span className="font-semibold">{formatPrice(0)}</span>
                       </div>
                     </div>
 
@@ -282,15 +302,40 @@ export default function CartPage() {
                     <div className="flex justify-between items-center text-xl font-bold bg-gradient-to-r from-fawaz-orange-50 to-fawaz-green-50 p-4 rounded-lg">
                       <span className="gradient-text">{t('cart.total')}</span>
                       <span className="text-2xl text-fawaz-green-600">
-                        {formatPrice(getTotalPrice() * 1.15)}
+                        {formatPrice(getTotalPrice() + 5000)}
                       </span>
                     </div>
 
                     {/* Checkout Button */}
-                    <Button className="w-full btn-primary text-lg py-6 rounded-xl shadow-lg hover:shadow-xl mt-4">
+                    <Button className="w-full btn-primary text-lg py-6 rounded-xl shadow-lg hover:shadow-xl mt-4" onClick={handleCheckout}>
                       <CreditCard className="w-6 h-6 mr-3" />
                       {t('cart.checkout')}
                     </Button>
+                    <Dialog open={showCheckoutForm} onOpenChange={setShowCheckoutForm}>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>معلومات الزبون لإتمام الطلب</DialogTitle>
+                        </DialogHeader>
+                        <form onSubmit={handleSendWhatsApp} className="space-y-4 mt-2">
+                          <div>
+                            <label className="block mb-1 font-medium">الاسم الكامل</label>
+                            <input type="text" required value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full border rounded px-3 py-2" />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">رقم الهاتف</label>
+                            <input type="tel" required value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full border rounded px-3 py-2" />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">العنوان</label>
+                            <input type="text" required value={customerAddress} onChange={e => setCustomerAddress(e.target.value)} className="w-full border rounded px-3 py-2" />
+                          </div>
+                          <Button type="submit" className="w-full btn-primary text-lg py-4 mt-2">إرسال الفاتورة إلى واتساب</Button>
+                        </form>
+                        <DialogClose asChild>
+                          <button className="absolute top-2 left-2 text-gray-400 hover:text-gray-700">إغلاق</button>
+                        </DialogClose>
+                      </DialogContent>
+                    </Dialog>
 
                     {/* Security Badge */}
                     <div className="text-center text-sm text-gray-500 mt-6 p-4 bg-gray-50 rounded-lg">
