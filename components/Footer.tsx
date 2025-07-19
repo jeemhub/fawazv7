@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { supabase } from '@/lib/supabaseClient';
 import { 
   Instagram, 
   Phone, 
@@ -18,8 +19,39 @@ import {
   Globe as TikTokIcon
 } from 'lucide-react';
 
+// Icon mapping for categories (adjust as needed)
+const categoryIconMap: Record<string, any> = {
+  cameras: Shield,
+  solar: Zap,
+  doors: Shield,
+  internet: Wifi,
+};
+
 export default function Footer() {
   const { t, isRTL, language } = useLanguage();
+
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('id', { ascending: true });
+      if (error) {
+        console.error('Error fetching categories:', error);
+        return;
+      }
+      if (data) {
+        const mapped = data.map((category: any) => ({
+          ...category,
+          image: category.image_url && category.image_url.trim() !== '' ? category.image_url : '/default.png',
+        }));
+        setCategories(mapped);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const quickLinks = [
     { name: t('nav.home'), href: '/' },
@@ -27,13 +59,6 @@ export default function Footer() {
     { name: t('nav.categories'), href: '/categories' },
     { name: t('nav.about'), href: '/about' },
     { name: t('nav.contact'), href: '/contact' },
-  ];
-
-  const categories = [
-    { name: t('category.cameras'), href: '/categories/cameras', icon: Shield },
-    { name: t('category.solar'), href: '/categories/solar', icon: Zap },
-    { name: t('category.doors'), href: '/categories/doors', icon: Shield },
-    { name: t('category.internet'), href: '/categories/internet', icon: Wifi },
   ];
 
   const socialLinks = [
@@ -125,15 +150,18 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               {categories.map((category) => {
-                const Icon = category.icon;
+                // Use category.id or category.name (adjust as needed)
+                const key = category.id || category.name;
+                // Try to map icon by id or fallback to Shield
+                const Icon = categoryIconMap[category.id] || Shield;
                 return (
-                  <li key={category.href}>
+                  <li key={key}>
                     <Link
-                      href={category.href}
+                      href={`/categories/${category.id}`}
                       className="flex items-center space-x-2 text-gray-400 hover:text-fawaz-orange-500 transition-colors text-sm"
                     >
                       <Icon className="h-4 w-4" />
-                      <span>{category.name}</span>
+                      <span>{language === 'ar' ? category.nameAr : category.name}</span>
                     </Link>
                   </li>
                 );

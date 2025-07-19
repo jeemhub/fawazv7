@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Select } from '@/components/ui/select';
 
 export default function CartPage() {
   const { t, language, isRTL } = useLanguage();
@@ -33,6 +34,8 @@ export default function CartPage() {
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerAddress, setCustomerAddress] = useState('');
+  const [shipping, setShipping] = useState(5000);
+  const [shippingLabel, setShippingLabel] = useState('محافظات');
 
   const handleCheckout = () => {
     setShowCheckoutForm(true);
@@ -50,9 +53,9 @@ export default function CartPage() {
     });
     invoiceText += `----------------------\n`;
     invoiceText += `المجموع: ${getTotalPrice().toLocaleString()} د.ع\n`;
-    invoiceText += `الشحن: 5,000 د.ع\n`;
+    invoiceText += `الشحن (${shippingLabel}): ${shipping.toLocaleString()} د.ع\n`;
     invoiceText += `الضريبة: 0 د.ع\n`;
-    invoiceText += `الإجمالي: ${(getTotalPrice() + 5000).toLocaleString()} د.ع\n`;
+    invoiceText += `الإجمالي: ${(getTotalPrice() + shipping).toLocaleString()} د.ع\n`;
     const waText = encodeURIComponent(invoiceText);
     window.open(`https://wa.me/9647870706555?text=${waText}`, '_blank');
   };
@@ -280,6 +283,25 @@ export default function CartPage() {
 
                     <Separator className="my-6" />
 
+                    {/* Shipping Select */}
+                    <div className="mb-4">
+                      <label className="block mb-2 font-medium text-gray-700">
+                        {language === 'ar' ? 'الشحن' : 'Shipping'}
+                      </label>
+                      <select
+                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-fawaz-orange-500"
+                        value={shipping}
+                        onChange={e => {
+                          const val = Number(e.target.value);
+                          setShipping(val);
+                          setShippingLabel(val === 3000 ? 'البصرة' : 'محافظات');
+                        }}
+                      >
+                        <option value={5000}>{language === 'ar' ? 'محافظات 5000' : 'Other Provinces 5000'}</option>
+                        <option value={3000}>{language === 'ar' ? 'البصرة 3000' : 'Basra 3000'}</option>
+                      </select>
+                    </div>
+
                     {/* Totals */}
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
@@ -288,7 +310,7 @@ export default function CartPage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">{language === 'ar' ? 'الشحن' : 'Shipping'}</span>
-                        <span className="font-semibold text-lg">{formatPrice(5000)}</span>
+                        <span className="font-semibold text-lg">{formatPrice(shipping)}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">{language === 'ar' ? 'الضريبة' : 'Tax'}</span>
@@ -302,7 +324,7 @@ export default function CartPage() {
                     <div className="flex justify-between items-center text-xl font-bold bg-gradient-to-r from-fawaz-orange-50 to-fawaz-green-50 p-4 rounded-lg">
                       <span className="gradient-text">{t('cart.total')}</span>
                       <span className="text-2xl text-fawaz-green-600">
-                        {formatPrice(getTotalPrice() + 5000)}
+                        {formatPrice(getTotalPrice() + shipping)}
                       </span>
                     </div>
 

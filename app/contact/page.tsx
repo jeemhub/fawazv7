@@ -22,10 +22,10 @@ export default function ContactPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <Phone className="text-fawaz-green-600 w-6 h-6" />
-              <span className="text-lg">+964 770 123 4567</span>
+              <span className="text-lg">07809876543</span>
               <span className="text-lg">|</span>
               <Phone className="text-fawaz-green-600 w-6 h-6" />
-              <span className="text-lg">+964 780 987 6543</span>
+              <span className="text-lg">07701234567</span>
             </div>
             <div className="flex items-center justify-center gap-3">
               <Mail className="text-fawaz-green-600 w-6 h-6" />
