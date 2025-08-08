@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter, Tajawal } from 'next/font/google';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { CartProvider } from '@/contexts/CartContext';
+import { SearchProvider } from '@/contexts/SearchContext';
 import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({ 
@@ -44,8 +45,10 @@ export default function RootLayout({
       <body className={`${inter.variable} ${tajawal.variable} antialiased`}>
         <LanguageProvider>
           <CartProvider>
-            {children}
-            <Toaster position="top-right" />
+            <SearchProvider>
+              {children}
+              <Toaster position="top-right" />
+            </SearchProvider>
           </CartProvider>
         </LanguageProvider>
       </body>

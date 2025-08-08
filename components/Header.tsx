@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
+import { useSearch } from '@/contexts/SearchContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -18,14 +19,17 @@ import {
   Package,
   Grid3X3,
   Info,
-  Phone
+  Phone,
+  X
 } from 'lucide-react';
 
 export default function Header() {
   const { language, setLanguage, t, isRTL } = useLanguage();
   const { getTotalItems } = useCart();
+  const { searchTerm, setSearchTerm } = useSearch();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [localSearchTerm, setLocalSearchTerm] = useState('');
 
   const navigation = [
     { name: t('nav.home'), href: '/', icon: Home },
@@ -39,12 +43,27 @@ export default function Header() {
     setLanguage(language === 'en' ? 'ar' : 'en');
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (localSearchTerm.trim()) {
+      setSearchTerm(localSearchTerm.trim());
+      // Redirect to products page with search
+      window.location.href = `/products?search=${encodeURIComponent(localSearchTerm.trim())}`;
+    }
+  };
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch(e as any);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
             <div className="relative w-10 h-10">
               <Image
                 src="/logo.jpg"
@@ -54,12 +73,17 @@ export default function Header() {
                 priority
               />
             </div>
-            <div className={`flex flex-col ${isRTL ? 'text-right' : 'text-left'}`}>
+            <div className={`flex flex-col ${isRTL ? 'text-right' : 'text-left'} hidden sm:flex`}>
               <span className="font-bold text-lg gradient-text">
                 {language === 'ar' ? 'مكتب فواز' : 'Fawaz Office'}
               </span>
               <span className="text-xs text-muted-foreground">
                 {language === 'ar' ? 'تقنيات المعلومات' : 'IT Solutions'}
+              </span>
+            </div>
+            <div className={`flex flex-col ${isRTL ? 'text-right' : 'text-left'} sm:hidden`}>
+              <span className="font-bold text-base gradient-text">
+                {language === 'ar' ? 'مكتب فواز' : 'Fawaz Office'}
               </span>
             </div>
           </Link>
@@ -70,7 +94,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium transition-colors hover:text-fawaz-orange-500 relative group"
+                className="text-sm font-medium transition-colors mx-4 hover:text-fawaz-orange-500 relative group"
               >
                 {item.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-fawaz-orange-500 transition-all group-hover:w-full"></span>
@@ -79,13 +103,24 @@ export default function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Search */}
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="hover:bg-fawaz-orange-50"
+              onClick={() => {
+                setIsSearchOpen(!isSearchOpen);
+                if (!isSearchOpen) {
+                  // Focus on search input when opening
+                  setTimeout(() => {
+                    const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+                    if (searchInput) {
+                      searchInput.focus();
+                    }
+                  }, 100);
+                }
+              }}
+              className="hover:bg-fawaz-orange-50 h-10 w-10 sm:h-9 sm:w-9"
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -95,7 +130,7 @@ export default function Header() {
               variant="ghost"
               size="icon"
               onClick={toggleLanguage}
-              className="hover:bg-fawaz-green-50"
+              className="hover:bg-fawaz-green-50 h-10 w-10 sm:h-9 sm:w-9"
             >
               <Globe className="h-5 w-5" />
               <span className="sr-only">Toggle language</span>
@@ -103,12 +138,12 @@ export default function Header() {
 
             {/* Cart */}
             <Link href="/cart">
-              <Button variant="ghost" size="icon" className="relative hover:bg-fawaz-orange-50">
+              <Button variant="ghost" size="icon" className="relative hover:bg-fawaz-orange-50 h-10 w-10 sm:h-9 sm:w-9">
                 <ShoppingCart className="h-5 w-5" />
                 {getTotalItems() > 0 && (
                   <Badge 
                     variant="destructive" 
-                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-fawaz-orange-500 hover:bg-fawaz-orange-600"
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-fawaz-orange-500 hover:bg-fawaz-orange-600"
                   >
                     {getTotalItems()}
                   </Badge>
@@ -119,7 +154,7 @@ export default function Header() {
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button variant="ghost" size="icon" className="md:hidden h-10 w-10 sm:h-9 sm:w-9">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
@@ -132,35 +167,90 @@ export default function Header() {
                         key={item.href}
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center space-x-3 text-lg font-medium p-3 rounded-lg hover:bg-fawaz-orange-50 transition-colors"
+                        className="flex items-center space-x-3 text-lg font-medium p-4 rounded-lg hover:bg-fawaz-orange-50 transition-colors"
                       >
                         <Icon className="h-5 w-5 text-fawaz-orange-500" />
                         <span>{item.name}</span>
                       </Link>
                     );
                   })}
+                  
+                  {/* Mobile Search in Menu */}
+                  <div className="pt-4 border-t">
+                    <h3 className="text-sm font-medium text-gray-500 mb-3 px-4">
+                      {language === 'ar' ? 'البحث السريع' : 'Quick Search'}
+                    </h3>
+                    <form onSubmit={handleSearch} className="px-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <input
+                          type="text"
+                          placeholder={t('common.search')}
+                          value={localSearchTerm}
+                          onChange={(e) => setLocalSearchTerm(e.target.value)}
+                          onKeyPress={handleSearchKeyPress}
+                          className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-fawaz-orange-500 focus:border-transparent"
+                        />
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
         </div>
 
-        {/* Search Bar */}
+        {/* Enhanced Search Bar */}
         <AnimatePresence>
           {isSearchOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="border-t py-4"
+              className="border-t py-6"
             >
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder={t('common.search')}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-fawaz-orange-500 focus:border-transparent"
-                />
+              <div className="max-w-2xl mx-auto">
+                <form onSubmit={handleSearch} className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                  <input
+                    type="text"
+                    placeholder={language === 'ar' ? 'ابحث عن المنتجات...' : 'Search for products...'}
+                    value={localSearchTerm}
+                    onChange={(e) => setLocalSearchTerm(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
+                    className="w-full pl-12 pr-20 py-4 text-lg border-2 border-gray-200 focus:border-fawaz-orange-500 focus:ring-fawaz-orange-500 rounded-xl shadow-sm"
+                  />
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="sm"
+                      className="h-10 px-4 text-sm hover:bg-fawaz-orange-50 font-medium"
+                    >
+                      {language === 'ar' ? 'بحث' : 'Search'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setIsSearchOpen(false);
+                        setLocalSearchTerm('');
+                      }}
+                      className="h-10 w-10 p-0 hover:bg-gray-100"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </form>
+                {localSearchTerm && (
+                  <div className="mt-3 text-sm text-gray-500 text-center">
+                    {language === 'ar' 
+                      ? `البحث عن: "${localSearchTerm}"`
+                      : `Searching for: "${localSearchTerm}"`
+                    }
+                  </div>
+                )}
               </div>
             </motion.div>
           )}

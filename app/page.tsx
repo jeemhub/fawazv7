@@ -154,33 +154,33 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-fawaz-orange-500 via-fawaz-orange-400 to-fawaz-green-500">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative container mx-auto px-4 py-20 lg:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-12 md:py-20 lg:py-32">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               className={`text-white ${isRTL ? 'text-right' : 'text-left'}`}
             >
-              <Badge className="mb-6 bg-white/20 text-white border-white/30">
-                <Star className="w-4 h-4 mr-2" />
+              <Badge className="mb-4 md:mb-6 bg-white/20 text-white border-white/30 text-sm">
+                <Star className="w-3 h-3 md:w-4 md:h-4 mr-2" />
                 {language === 'ar' ? 'الأفضل في العراق' : 'Best in Iraq'}
               </Badge>
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
                 {t('home.hero.title')}
               </h1>
-              <p className="text-xl mb-8 text-white/90 leading-relaxed">
+              <p className="text-base md:text-xl mb-6 md:mb-8 text-white/90 leading-relaxed">
                 {t('home.hero.subtitle')}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                 <Link href="/products">
-                  <Button size="lg" className="bg-white text-fawaz-orange-500 hover:bg-gray-100 font-semibold px-8 py-4 text-lg">
+                  <Button size="lg" className="bg-white text-fawaz-orange-500 hover:bg-gray-100 font-semibold px-6 md:px-8 py-3 md:py-4 text-base md:text-lg">
                     {t('home.hero.cta')}
-                    <ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2' : 'ml-2'}`} />
+                    <ArrowRight className={`w-4 h-4 md:w-5 md:h-5 ${isRTL ? 'mr-2' : 'ml-2'}`} />
                   </Button>
                 </Link>
                 <Link href="/about">
-                  <Button size="lg" variant="outline" className="border-white text-black hover:bg-white hover:text-fawaz-orange-500 px-8 py-4 text-lg">
+                  <Button size="lg" variant="outline" className="border-white text-black hover:bg-white hover:text-fawaz-orange-500 px-6 md:px-8 py-3 md:py-4 text-base md:text-lg">
                     {t('home.hero.learn')}
                   </Button>
                 </Link>
@@ -191,9 +191,9 @@ export default function HomePage() {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              className="relative order-first lg:order-last"
             >
-              <div className="relative w-full h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
                 <img
                   src="https://images.pexels.com/photos/430208/pexels-photo-430208.jpeg?auto=compress&cs=tinysrgb&w=800"
                   alt="Security Camera"
@@ -225,7 +225,7 @@ export default function HomePage() {
 
       {/* Stats Section */}
       <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
@@ -251,17 +251,17 @@ export default function HomePage() {
 
       {/* Features Section */}
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className={`text-center mb-16 ${isRTL ? 'text-right' : 'text-left'}`}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4 gradient-text">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 gradient-text text-center">
               {language === 'ar' ? 'لماذا تختار مكتب فواز؟' : 'Why Choose Fawaz Office?'}
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto text-center">
               {language === 'ar' 
                 ? 'نقدم حلول تقنية متطورة مع خدمة عملاء استثنائية وضمان الجودة'
                 : 'We provide cutting-edge technology solutions with exceptional customer service and quality assurance'
@@ -297,7 +297,7 @@ export default function HomePage() {
 
       {/* Categories Section */}
       <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -352,7 +352,7 @@ export default function HomePage() {
 
       {/* Featured Products Section */}
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -404,14 +404,14 @@ export default function HomePage() {
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-fawaz-orange-500 to-fawaz-green-500">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="max-w-4xl mx-auto text-white"
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 ">
               {language === 'ar' 
                 ? 'جاهز لتأمين منزلك أو عملك؟'
                 : 'Ready to Secure Your Home or Business?'
@@ -430,7 +430,7 @@ export default function HomePage() {
                 </Button>
               </Link>
               <Link href="/products">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-fawaz-orange-500 px-8 py-4 text-lg">
+                <Button size="lg" variant="outline" className="border-white text-black hover:bg-white hover:text-fawaz-orange-500 px-8 py-4 text-lg">
                   {t('nav.products')}
                 </Button>
               </Link>

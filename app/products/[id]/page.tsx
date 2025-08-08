@@ -74,8 +74,8 @@ export default function ProductDetailsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <main className="flex-1 flex items-center justify-center py-12 px-4">
-        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-6 md:p-10 flex flex-col md:flex-row gap-8">
+      <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 md:p-10 flex flex-col md:flex-row gap-8">
           {loading ? (
             <div className="w-full text-center py-20">
               <div className="w-16 h-16 mx-auto rounded-full bg-gray-100 animate-pulse mb-6" />
