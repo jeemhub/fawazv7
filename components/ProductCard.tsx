@@ -112,7 +112,7 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
                     </Badge>
                   </div>
                   
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                  <div className="flex flex-col items-stretch sm:items-center gap-2 sm:gap-3">
                     <Link href={`/products/${product.id}`} className="flex-1 sm:flex-none">
                       <Button variant="outline" className="w-full sm:w-auto border-fawaz-green-500 text-fawaz-green-600 hover:bg-fawaz-green-50">
                         <Eye className="w-4 h-4 mr-2" />
@@ -206,7 +206,7 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
         </CardContent>
 
         <CardFooter className="p-3 sm:p-4 md:p-5 pt-0">
-          <div className="flex flex-col sm:flex-row gap-2 w-full">
+          <div className="flex flex-col gap-2 w-full">
             <Button
               onClick={handleAddToCart}
               disabled={!product.inStock}
