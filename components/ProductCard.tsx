@@ -14,13 +14,13 @@ import Link from 'next/link';
 interface Product {
   id: string;
   name: string;
-  nameAr: string;
+  name_ar: string;
   description: string;
-  descriptionAr: string;
+  description_ar: string;
   price: number;
-  category: string;
-  image: string;
-  inStock: boolean;
+  category_id: string;
+  image_url: string;
+  in_stock: boolean;
   featured?: boolean;
 }
 
@@ -41,10 +41,10 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
     addToCart({
       id: product.id,
       name: product.name,
-      nameAr: product.nameAr,
+      nameAr: product.name_ar,
       price: product.price,
-      image: product.image,
-      category: product.category,
+      image: product.image_url,
+      category: product.category_id,
     });
   };
 
@@ -68,8 +68,8 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
               {/* Product Image */}
               <div className="relative w-full sm:w-32 h-48 sm:h-32 flex-shrink-0 rounded-xl overflow-hidden">
                 <Image
-                  src={product.image && product.image.trim() !== '' ? product.image : '/default.png'}
-                  alt={language === 'ar' ? product.nameAr : product.name}
+                  src={product.image_url && product.image_url.trim() !== '' ? product.image_url : '/default.png'}
+                  alt={language === 'ar' ? product.name_ar : product.name}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-110"
                 />
@@ -81,10 +81,10 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-lg md:text-xl text-gray-900 group-hover:text-fawaz-orange-500 transition-colors leading-tight mb-2">
-                      {language === 'ar' ? product.nameAr : product.name}
+                      {language === 'ar' ? product.name_ar : product.name}
                     </h3>
                     <p className="text-gray-600 leading-relaxed line-clamp-2 text-sm md:text-base">
-                      {language === 'ar' ? product.descriptionAr : product.description}
+                      {language === 'ar' ? product.description_ar : product.description}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 sm:ml-4">
@@ -94,7 +94,7 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
                         {language === 'ar' ? 'مميز' : 'Featured'}
                       </Badge>
                     )}
-                    {!product.inStock && (
+                    {!product.in_stock && (
                       <Badge variant="destructive" className="text-xs">
                         {t('product.outOfStock')}
                       </Badge>
@@ -121,7 +121,7 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
                     </Link>
                     <Button
                       onClick={handleAddToCart}
-                      disabled={!product.inStock}
+                      disabled={!product.in_stock}
                       className="btn-primary flex-1 sm:flex-none"
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
@@ -151,8 +151,8 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
           {/* Product Image */}
           <div className="relative h-40 sm:h-48 md:h-56 w-full">
             <Image
-              src={product.image && product.image.trim() !== '' ? product.image : '/default.png'}
-              alt={language === 'ar' ? product.nameAr : product.name}
+              src={product.image_url && product.image_url.trim() !== '' ? product.image_url : '/default.png'}
+              alt={language === 'ar' ? product.name_ar : product.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-110"
             />
@@ -167,7 +167,7 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
                 {language === 'ar' ? 'مميز' : 'Featured'}
               </Badge>
             )}
-            {!product.inStock && (
+            {!product.in_stock && (
               <Badge variant="destructive" className="text-xs">
                 {t('product.outOfStock')}
               </Badge>
@@ -189,10 +189,10 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
         <CardContent className="p-3 sm:p-4 md:p-5">
           <div className="space-y-2 md:space-y-3">
             <h3 className="font-semibold text-sm sm:text-base md:text-lg line-clamp-2 group-hover:text-fawaz-orange-500 transition-colors leading-tight">
-              {language === 'ar' ? product.nameAr : product.name}
+              {language === 'ar' ? product.name_ar : product.name}
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-              {language === 'ar' ? product.descriptionAr : product.description}
+              {language === 'ar' ? product.description_ar : product.description}
             </p>
             <div className="flex items-center justify-between pt-2">
               <span className="text-lg sm:text-xl md:text-2xl font-bold text-fawaz-green-600">
@@ -209,7 +209,7 @@ export default function ProductCard({ product, index = 0, viewMode = 'grid' }: P
           <div className="flex flex-col gap-2 w-full">
             <Button
               onClick={handleAddToCart}
-              disabled={!product.inStock}
+              disabled={!product.in_stock}
               className="flex-1 btn-primary h-10 sm:h-11 md:h-12 text-sm font-medium"
             >
               <ShoppingCart className="w-4 h-4 mr-2" />

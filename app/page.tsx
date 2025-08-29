@@ -29,13 +29,13 @@ import { useRouter } from 'next/navigation';
 interface Product {
   id: string;
   name: string;
-  nameAr: string;
+  name_ar: string;
   description: string;
-  descriptionAr: string;
+  description_ar: string;
   price: number;
-  category: string;
-  image: string;
-  inStock: boolean;
+  category_id: string;
+  image_url: string;
+  in_stock: boolean;
   featured?: boolean;
 }
 
@@ -92,7 +92,7 @@ export default function HomePage() {
 
   // الفئات التي لديها منتجات فقط
   const categoriesWithProducts = categories.filter(category =>
-    products.some(product => product.category === category.id)
+    products.some(product => product.category_id === category.id)
   );
 
   const handleCategoryClick = (categoryId: string) => {
