@@ -20,22 +20,22 @@ import { useSearchParams } from 'next/navigation';
 interface Product {
   id: string;
   name: string;
-  nameAr: string;
+  name_ar: string;
   description: string;
-  descriptionAr: string;
+  description_ar: string;
   price: number;
-  category: string;
-  image: string;
-  inStock: boolean;
+  category_id: string;
+  image_url: string;
+  in_stock: boolean;
   featured?: boolean;
 }
 
 interface Category {
   id: string;
   name: string;
-  nameAr: string;
+  name_ar: string;
   description: string;
-  descriptionAr: string;
+  description_ar: string;
   image: string;
 }
 
@@ -78,7 +78,7 @@ export default function ProductsPage() {
       if (data) {
         const mapped = data.map((product: any) => ({
           ...product,
-          image: product.image_url && product.image_url.trim() !== '' ? product.image_url : '/default.png',
+          image_url: product.image_url && product.image_url.trim() !== '' ? product.image_url : '/default.png',
         }));
         setProducts(mapped);
       }
@@ -109,7 +109,7 @@ export default function ProductsPage() {
   // الفئات التي لديها منتجات فقط
   const categoriesWithProducts = useMemo(() => {
     return categories.filter(category =>
-      products.some(product => product.category === category.id)
+      products.some(product => product.category_id === category.id)
     );
   }, [categories, products]);
 
@@ -117,17 +117,17 @@ export default function ProductsPage() {
     let filtered = products.filter(product => {
       const matchesSearch = searchTerm === '' || 
         (product.name && product.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (product.nameAr && product.nameAr.includes(searchTerm)) ||
+        (product.name_ar && product.name_ar.includes(searchTerm)) ||
         (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (product.descriptionAr && product.descriptionAr.includes(searchTerm));
-      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+        (product.description_ar && product.description_ar.includes(searchTerm));
+      const matchesCategory = selectedCategory === 'all' || product.category_id === selectedCategory;
       return matchesSearch && matchesCategory;
     });
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'name':
           return language === 'ar' 
-            ? a.nameAr.localeCompare(b.nameAr)
+            ? a.name_ar.localeCompare(b.name_ar)
             : a.name.localeCompare(b.name);
         case 'price-low':
           return a.price - b.price;
@@ -155,7 +155,7 @@ export default function ProductsPage() {
       return language === 'ar' ? 'جميع الفئات' : 'All Categories';
     }
     const category = categories.find(c => c.id === selectedCategory);
-    return category ? (language === 'ar' ? category.nameAr : category.name) : '';
+    return category ? (language === 'ar' ? category.name_ar : category.name) : '';
   };
 
   return (
@@ -233,7 +233,7 @@ export default function ProductsPage() {
                           onClick={() => setSelectedCategory(category.id)}
                           className="w-full justify-start text-sm"
                         >
-                          {language === 'ar' ? category.nameAr : category.name}
+                          {language === 'ar' ? category.name_ar : category.name}
                         </Button>
                       ))}
                     </div>
@@ -335,7 +335,7 @@ export default function ProductsPage() {
                     </SelectItem>
                     {categoriesWithProducts.map(category => (
                       <SelectItem key={category.id} value={category.id}>
-                        {language === 'ar' ? category.nameAr : category.name}
+                        {language === 'ar' ? category.name_ar : category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
